@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     boolean attemptingToConnect = false;
 
+    
     //Toasts
     public Context context;
     CharSequence connectingText  = "Connecting...";
