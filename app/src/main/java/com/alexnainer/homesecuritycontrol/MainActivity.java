@@ -1,9 +1,11 @@
 package com.alexnainer.homesecuritycontrol;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.AsyncTask;
@@ -17,10 +19,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, OnErrorListener {
 
     public TCPClient tcpClient;
+    private TCPNetworkingTask tcpNetworking;
     public CommandSender commandSender;
+    public ColourAnimator colourAnimator;
+    public DialogPresenter dialogPresenter;
 
     final int DISARMED = 0;
     final int ARMED_STAY = 1;
@@ -30,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     boolean attemptingToConnect = false;
 
-    
+
     //Toasts
     public Context context;
     CharSequence connectingText  = "Connecting...";
@@ -44,6 +49,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Toast sendArmToast;
     Toast sendDisarmToast;
     Toast cannotConnectToast;
+
+    CardView armButton;
+    CardView disarmButton;
+
 
     Toolbar toolbar;
 
@@ -71,28 +80,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         pullToRefresh = findViewById(R.id.pullToRefresh);
 
-        commandSender = new CommandSender();
-
 
         statusView = findViewById(R.id.statusView);
         statusText = findViewById(R.id.statusText);
         statusText.setTextColor(Color.parseColor("#000000"));
 
 
-        CardView armButton = findViewById(R.id.armButton);
+        armButton = findViewById(R.id.armButton);
         armButton.setOnClickListener(this);
 
-        CardView disarmButton = findViewById(R.id.disarmButton);
+        disarmButton = findViewById(R.id.disarmButton);
         disarmButton.setOnClickListener(this);
         statusText.setText("Not Connected");
+
+
 
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+
                 attemptingToConnect = true;
                 new android.os.Handler().postDelayed(
                         new Runnable() {
                             public void run() {
+
                                 if (attemptingToConnect) {
                                     pullToRefresh.setRefreshing(false);
                                     cannotConnectToast.show();
@@ -115,9 +126,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
-                new connectTask().execute("");
+
+                tcpNetworking = new TCPNetworkingTask();
+                //tcpNetworking.delegate = context;
+                tcpNetworking.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
 
                 Log.d("TCP", "attempting to connect...");
+
+//                if (tcpClient.unableToConnectError) {
+//                    attemptingToConnect = false;
+//                    pullToRefresh.setRefreshing(false);
+//                    dialogPresenter.showUnableToConnectDialog();
+//                }
 
 
 
@@ -129,6 +150,63 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        Log.d("LEARN", "++ ON START ++");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        colourAnimator = new ColourAnimator(this);
+        commandSender = new CommandSender(this);
+        dialogPresenter = new DialogPresenter(this);
+
+        armButton.setClickable(false);
+        disarmButton.setClickable(false);
+
+        statusView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+        statusText.setText("Not Connected");
+        statusText.setTextColor(Color.parseColor("#000000"));
+
+
+
+        Log.d("LEARN", "+ ON RESUME +");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d("LEARN", "- ON PAUSE -");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        commandSender = null;
+        dialogPresenter = null;
+        colourAnimator = null;
+
+        if (tcpClient != null) {
+            tcpClient = null;
+        }
+
+        if (tcpNetworking != null) {
+            tcpNetworking.cancel(true);
+            tcpNetworking = null;
+        }
+
+
+
+        Log.d("LEARN", "-- ON STOP --");
+    }
+
+
+
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -137,12 +215,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.settingsButton) {
             startActivity(new Intent(MainActivity.this, SettingsPrefActivity.class));
             return true;
@@ -173,15 +247,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         }
 
+    }
+
+    @Override
+    public void onConnectionError() {
 
     }
 
-    public class connectTask extends AsyncTask<String, String, TCPClient> {
+    public class TCPNetworkingTask extends AsyncTask<String, String, TCPClient> {
+
+        public OnErrorListener delegate = null;
 
         @Override
         protected TCPClient doInBackground(String... message) {
 
             //we create a TCPClient object and
+            Log.d("TCP", "Creating new TCPClient Object");
             tcpClient = new TCPClient(new TCPClient.OnMessageReceived() {
                 @Override
                 //here the messageReceived method is implemented
@@ -189,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     publishProgress(message);
 
                 }
-            });
+            }, context);
             tcpClient.run();
 
             return null;
@@ -203,38 +284,57 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             if (values[0].equals("Login:")) {
                 attemptingToConnect = false;
-                commandSender.sendLogin(tcpClient, "r21n7X");
+                commandSender.sendLogin(tcpClient);
             } else if (values[0].equals("OK")) {
+
                 statusText.setText("Getting Status...");
                 successToast.show();
 
             } else if (values[0].contains("****DISARMED****")) {
+                armButton.setClickable(true);
+                disarmButton.setClickable(true);
+
                 sendDisarmToast.cancel();
                 attemptingToConnect = false;
                 alarmStatus = DISARMED;
 
-
                 statusText.setTextColor(Color.parseColor("#FFFFFF"));
-                statusView.setBackgroundColor(Color.parseColor("#388E3C"));
+                colourAnimator.toAlarmGreen(statusView);
                 statusText.setText("Disarmed");
                 pullToRefresh.setRefreshing(false);
                 Log.d("TCP", "Alarm is disarmed");
 
 
             } else if (values[0].contains("ARMED ***STAY***")) {
+                armButton.setClickable(true);
+                disarmButton.setClickable(true);
+
                 sendArmToast.cancel();
                 attemptingToConnect = false;
                 alarmStatus = ARMED_STAY;
 
                 statusText.setTextColor(Color.parseColor("#FFFFFF"));
-                statusView.setBackgroundColor(Color.parseColor("#d32f2f"));
                 statusText.setText("Armed (Stay)");
+                colourAnimator.toAlarmRed(statusView);
                 pullToRefresh.setRefreshing(false);
                 Log.d("TCP", "Alarm is armed");
 
 
+            } else if (values[0].contains("FAILED")) {
+                pullToRefresh.setRefreshing(false);
+                attemptingToConnect = false;
+
+                dialogPresenter.showUnableToLoginDialog();
+
+
             }
         }
+
+//        @Override
+//        protected void onPostExecute() {
+//            delegate.onConnectionError();
+//
+//        }
     }
 
 

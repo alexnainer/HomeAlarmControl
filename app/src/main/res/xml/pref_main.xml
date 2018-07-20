@@ -3,22 +3,36 @@
     android:layout_below="@+id/toolbarSettings">
 
 
-    <PreferenceCategory android:title="General">
+    <PreferenceCategory android:title="Alarm Settings">
         <EditTextPreference
-            android:defaultValue="@string/default_gallery_storage"
-            android:key="@string/key_gallery_name"
-            android:summary="@string/default_gallery_storage"
-            android:title="@string/title_gallery_storage" />
+            android:key="@string/key_ip_address"
 
+            android:title="@string/ip_address" />
+
+        <EditTextPreference
+            android:key="@string/key_password"
+            android:title="@string/password"
+            android:summary="Same password used for Envisalink's local page"
+            android:inputType="textPassword" />
+
+        <EditTextPreference
+            android:key="@string/key_pin"
+            android:title="@string/pin"
+            android:summary="Pin used to enter commands"
+            android:inputType="numberPassword" />
+
+
+
+        <!--
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/key_upload_over_wifi"
             android:summary="@string/summary_upload_over_wifi"
             android:title="@string/title_auto_upload" />
-
-
+        -->
     </PreferenceCategory>
 
+<!--
     <PreferenceCategory android:title="@string/pref_title_notifications">
 
         <SwitchPreference
@@ -40,41 +54,18 @@
             android:summary="@string/summary_vibrate"
             android:title="@string/title_vibrate" />
     </PreferenceCategory>
+-->
 
     <PreferenceCategory android:title="@string/pref_header_about">
 
         <Preference
             android:selectable="false"
-            android:summary="@string/summary_about" />
+            android:summary="Made in Canada 🇨🇦" />
 
         <Preference
             android:summary="@string/app_version"
             android:title="@string/title_version" />
 
-        <Preference
-            android:key="@string/key_send_feedback"
-            android:summary="@string/summary_support"
-            android:title="@string/title_send_feedback" />
 
-        <!-- preference opens url in browser -->
-        <Preference
-            android:summary="@string/summary_faq"
-            android:title="@string/title_faq">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="@string/url_faq" />
-        </Preference>
-
-        <Preference android:title="@string/privacy_policy">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="@string/url_privacy" />
-        </Preference>
-
-        <Preference android:title="@string/title_terms">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="@string/url_terms" />
-        </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

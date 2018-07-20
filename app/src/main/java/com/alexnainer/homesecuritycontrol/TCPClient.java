@@ -1,5 +1,9 @@
 package com.alexnainer.homesecuritycontrol;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -9,13 +13,15 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import static java.security.AccessController.getContext;
 
 
 public class TCPClient {
 
 
     public final String TAG = TCPClient.class.getSimpleName();
-    public static final String SERVER_IP = "172.26.1.132"; //server IP address
+    SharedPreferences prefs;
+    public static String serverIP; //server IP address
     public static final int SERVER_PORT = 4025;
     // message to send to the server
     private String mServerMessage;
@@ -29,18 +35,26 @@ public class TCPClient {
     private BufferedReader mBufferIn;
     private Socket socket;
 
+    public boolean unableToConnectError;
+
+    private OnErrorListener onErrorListener;
+
     /**
      * Constructor of the class. OnMessagedReceived listens for the messages received from server
      */
-    public TCPClient(OnMessageReceived listener) {
+    public TCPClient(OnMessageReceived listener, Context context) {
+
         mMessageListener = listener;
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        unableToConnectError = false;
+        serverIP = prefs.getString("key_ip_address", "DEFAULT");
+
     }
 
-    /**
-     * Sends the message entered by client to the server
-     *
-     * @param message text entered by client
-     */
+    public void setOnErrorListener(OnErrorListener listener) {
+        onErrorListener = listener;
+    }
+
     public void sendMessage(final String message) {
         Runnable runnable = new Runnable() {
             @Override
@@ -54,6 +68,7 @@ public class TCPClient {
         };
         Thread thread = new Thread(runnable);
         thread.start();
+
     }
 
     /**
@@ -80,7 +95,7 @@ public class TCPClient {
 
         try {
             //here you must put your computer's IP address.
-            InetAddress serverAddr = InetAddress.getByName(SERVER_IP);
+            InetAddress serverAddr = InetAddress.getByName(serverIP);
 
             Log.d("TCP Client", "C: Connecting...");
 
@@ -100,6 +115,7 @@ public class TCPClient {
                 //in this while the client listens for the messages sent by the server
                 while (shouldSocketBeOpen) {
 
+                    unableToConnectError = false;
 
                     mServerMessage = mBufferIn.readLine();
 
@@ -113,7 +129,13 @@ public class TCPClient {
 
 
             } catch (Exception e) {
-                Log.e("TCP", "S: Error", e);
+                Log.e("TCP", "S: Error1", e);
+
+                if (onErrorListener != null) {
+                    onErrorListener.onConnectionError();
+                }
+
+
             } finally {
                 //the socket must be closed. It is not possible to reconnect to this socket
                 // after it is closed, which means a new socket instance has to be created.
@@ -121,7 +143,7 @@ public class TCPClient {
             }
 
         } catch (Exception e) {
-            Log.e("TCP", "C: Error", e);
+            Log.e("TCP", "C: Error2", e);
         }
 
     }
