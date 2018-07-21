@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-public class CommandSender extends MainActivity {
+public class CommandSender {
 
     SharedPreferences prefs;
     String password;
@@ -18,9 +18,9 @@ public class CommandSender extends MainActivity {
         password = prefs.getString("key_password", "DEFAULT");
         pin = prefs.getString("key_pin", "DEFAULT");
 
+
+
     }
-
-
 
      public void sendLogin(TCPClient tcpClient) {
 

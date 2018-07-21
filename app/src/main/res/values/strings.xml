@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Home Security Control</string>
 
-    <string name="unable_to_login_message">This is most likely due to an incorrect password. Please verify your password is correct</string>
+    <string name="unable_to_login_message">This is most likely due to an incorrect password. Please verify your password is correct.</string>
     <string name="unable_to_connect_message">The alarm reset the connection. Please try again.</string>
 
 
@@ -17,8 +17,14 @@
     <string name="pin">Pin</string>
     <string name="key_pin">key_pin</string>
 
+    <string name="auto_connect">Auto Connect</string>
+    <string name="auto_connect_summary">Automatically attempt to connect to alarm when app is launched</string>
+    <string name="key_auto_connect">key_auto_connect</string>
+
     <string name="pref_header_about">About</string>
-    <string name="app_version">3.5</string>
+    <string name="about_summary">Created by Alex Nainer. Made in Canada 🇨🇦</string>
     <string name="title_version">Version</string>
+    <string name="app_version">1.0_debug</string>
+
 
 </resources>

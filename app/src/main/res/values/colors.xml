@@ -6,4 +6,8 @@
 
     <color name="greenDisarmed">#388E3C</color>
     <color name="redArmed">#d32f2f</color>
+
+    <color name="cardEnabled">#FFFFFF</color>
+    <color name="cardDisabled">#EEEEEE</color>
+
 </resources>

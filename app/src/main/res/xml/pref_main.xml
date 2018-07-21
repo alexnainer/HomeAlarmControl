@@ -6,7 +6,6 @@
     <PreferenceCategory android:title="Alarm Settings">
         <EditTextPreference
             android:key="@string/key_ip_address"
-
             android:title="@string/ip_address" />
 
         <EditTextPreference
@@ -32,14 +31,16 @@
         -->
     </PreferenceCategory>
 
-<!--
-    <PreferenceCategory android:title="@string/pref_title_notifications">
+
+    <PreferenceCategory android:title="App Settings">
 
         <SwitchPreference
-            android:defaultValue="true"
-            android:key="@string/notifications_new_message"
-            android:title="@string/title_new_notification_sound" />
+            android:defaultValue="false"
+            android:key="@string/key_auto_connect"
+            android:title="@string/auto_connect"
+            android:summary="@string/auto_connect_summary"/>
 
+        <!--
         <RingtonePreference
             android:defaultValue="content://settings/system/notification_sound"
             android:dependency="notifications_new_message"
@@ -53,18 +54,21 @@
             android:key="@string/key_vibrate"
             android:summary="@string/summary_vibrate"
             android:title="@string/title_vibrate" />
+            -->
     </PreferenceCategory>
--->
+
 
     <PreferenceCategory android:title="@string/pref_header_about">
 
         <Preference
-            android:selectable="false"
-            android:summary="Made in Canada 🇨🇦" />
-
-        <Preference
             android:summary="@string/app_version"
             android:title="@string/title_version" />
+
+        <Preference
+            android:selectable="false"
+            android:summary="@string/about_summary" />
+
+
 
 
     </PreferenceCategory>

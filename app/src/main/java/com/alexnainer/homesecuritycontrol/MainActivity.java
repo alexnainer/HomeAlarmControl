@@ -1,11 +1,12 @@
 package com.alexnainer.homesecuritycontrol;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.AsyncTask;
@@ -16,43 +17,24 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
-
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, OnErrorListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener  {
 
     public TCPClient tcpClient;
     private TCPNetworkingTask tcpNetworking;
     public CommandSender commandSender;
     public ColourAnimator colourAnimator;
     public DialogPresenter dialogPresenter;
-
-    final int DISARMED = 0;
-    final int ARMED_STAY = 1;
-    final int ARMED_AWAY = 2;
-
-    int alarmStatus;
+    public ToastPresenter toastPresenter;
+    private SharedPreferences prefs;
 
     boolean attemptingToConnect = false;
+    boolean didLaunchSettings = false;
 
-
-    //Toasts
     public Context context;
-    CharSequence connectingText  = "Connecting...";
-    CharSequence sendArmText  = "Attempting to Arm...";
-    CharSequence sendDisarmText  = "Attempting to Disarm...";
-    CharSequence cannotConnectText  = "Cannot connect!";
-    int shortDuration = Toast.LENGTH_SHORT;
-    int LongDuration = Toast.LENGTH_LONG;
-    Toast connectingToast;
-    Toast successToast;
-    Toast sendArmToast;
-    Toast sendDisarmToast;
-    Toast cannotConnectToast;
 
     CardView armButton;
     CardView disarmButton;
-
 
     Toolbar toolbar;
 
@@ -66,20 +48,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Log.d("LEARN", "+++ ON CREATE +++");
+
 //        toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
 
-        //Toasts
         context = getApplicationContext();
-        connectingToast = Toast.makeText(context, connectingText, shortDuration);
-        successToast = Toast.makeText(context, "Success!", shortDuration);
-        sendDisarmToast = Toast.makeText(context, sendDisarmText, LongDuration);
-        sendArmToast = Toast.makeText(context, sendArmText, LongDuration);
-        cannotConnectToast = Toast.makeText(context, cannotConnectText, LongDuration);
 
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         pullToRefresh = findViewById(R.id.pullToRefresh);
-
 
         statusView = findViewById(R.id.statusView);
         statusText = findViewById(R.id.statusText);
@@ -93,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         disarmButton.setOnClickListener(this);
         statusText.setText("Not Connected");
 
-
+        pullToRefresh.setRefreshing(false);
 
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -106,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                                 if (attemptingToConnect) {
                                     pullToRefresh.setRefreshing(false);
-                                    cannotConnectToast.show();
+                                    toastPresenter.showCannotConnectToast();
                                     Log.i("TCP", "Cannot connect to server");
 
                                     if (tcpClient != null) {
@@ -117,35 +95,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     statusView.setBackgroundColor(Color.parseColor("#FFFFFF"));
                                     statusText.setText("Not Connected");
 
-
                                 }
                             }
                         },
-                        3000);
+                        2000);
 
-
-
-
-
-                tcpNetworking = new TCPNetworkingTask();
-                //tcpNetworking.delegate = context;
-                tcpNetworking.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
+                attemptToConnect();
 
                 Log.d("TCP", "attempting to connect...");
 
-//                if (tcpClient.unableToConnectError) {
-//                    attemptingToConnect = false;
-//                    pullToRefresh.setRefreshing(false);
-//                    dialogPresenter.showUnableToConnectDialog();
-//                }
-
-
-
             }
         });
-
-
 
     }
 
@@ -159,18 +119,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onResume() {
         super.onResume();
 
+        boolean isAutoConnect = prefs.getBoolean("key_auto_connect", false);
+
+        if(isAutoConnect && !didLaunchSettings){
+            pullToRefresh.setRefreshing(true);
+            attemptToConnect();
+        }
+        didLaunchSettings = false;
+
         colourAnimator = new ColourAnimator(this);
         commandSender = new CommandSender(this);
         dialogPresenter = new DialogPresenter(this);
+        toastPresenter = new ToastPresenter(this);
 
-        armButton.setClickable(false);
-        disarmButton.setClickable(false);
+        disableButtons();
 
         statusView.setBackgroundColor(Color.parseColor("#FFFFFF"));
         statusText.setText("Not Connected");
         statusText.setTextColor(Color.parseColor("#000000"));
-
-
 
         Log.d("LEARN", "+ ON RESUME +");
     }
@@ -182,6 +148,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    public void onRestart() {
+        super.onRestart();
+        Log.d("LEARN", "ON RESTART");
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
 
@@ -189,7 +161,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dialogPresenter = null;
         colourAnimator = null;
 
+        nullTCPObjects();
+
+        Log.d("LEARN", "-- ON STOP --");
+    }
+
+
+    private void attemptToConnect() {
+        tcpNetworking = new TCPNetworkingTask();
+        tcpNetworking.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private void nullTCPObjects() {
+
         if (tcpClient != null) {
+            tcpClient.stopClient();
             tcpClient = null;
         }
 
@@ -197,13 +183,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             tcpNetworking.cancel(true);
             tcpNetworking = null;
         }
-
-
-
-        Log.d("LEARN", "-- ON STOP --");
     }
 
+    private void disableButtons() {
 
+        armButton.setClickable(false);
+        disarmButton.setClickable(false);
+
+        armButton.setBackgroundColor(ContextCompat.getColor(context, R.color.cardDisabled));
+        disarmButton.setBackgroundColor(ContextCompat.getColor(context, R.color.cardDisabled));
+
+        armButton.setElevation(0);
+        disarmButton.setElevation(0);
+    }
+
+    private void enableButtons() {
+
+        armButton.setClickable(true);
+        disarmButton.setClickable(true);
+
+        armButton.setBackgroundColor(ContextCompat.getColor(context, R.color.cardEnabled));
+        disarmButton.setBackgroundColor(ContextCompat.getColor(context, R.color.cardEnabled));
+
+        armButton.setElevation(8);
+        disarmButton.setElevation(8);
+    }
 
 
     @Override
@@ -218,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int id = item.getItemId();
 
         if (id == R.id.settingsButton) {
+            didLaunchSettings = true;
             startActivity(new Intent(MainActivity.this, SettingsPrefActivity.class));
             return true;
         }
@@ -232,13 +237,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.armButton:
                 Log.d("TCP", "arm onClick");
-                sendArmToast.show();
+                toastPresenter.showSendArmToast();
                 commandSender.sendArm(tcpClient);
                 break;
 
             case R.id.disarmButton:
                 Log.d("TCP", "disarm onClick");
-                sendDisarmToast.show();
+                toastPresenter.showSendDisarmToast();
                 commandSender.sendDisarm(tcpClient);
                 break;
 
@@ -249,26 +254,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    @Override
-    public void onConnectionError() {
-
-    }
-
     public class TCPNetworkingTask extends AsyncTask<String, String, TCPClient> {
-
-        public OnErrorListener delegate = null;
 
         @Override
         protected TCPClient doInBackground(String... message) {
 
-            //we create a TCPClient object and
-            Log.d("TCP", "Creating new TCPClient Object");
             tcpClient = new TCPClient(new TCPClient.OnMessageReceived() {
                 @Override
-                //here the messageReceived method is implemented
                 public void messageReceived(String message) {
                     publishProgress(message);
-
                 }
             }, context);
             tcpClient.run();
@@ -288,15 +282,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } else if (values[0].equals("OK")) {
 
                 statusText.setText("Getting Status...");
-                successToast.show();
+                toastPresenter.showSuccessToast();
 
             } else if (values[0].contains("****DISARMED****")) {
-                armButton.setClickable(true);
-                disarmButton.setClickable(true);
 
-                sendDisarmToast.cancel();
+                enableButtons();
+
+                toastPresenter.cancelSendDisarmToast();
                 attemptingToConnect = false;
-                alarmStatus = DISARMED;
 
                 statusText.setTextColor(Color.parseColor("#FFFFFF"));
                 colourAnimator.toAlarmGreen(statusView);
@@ -306,12 +299,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
             } else if (values[0].contains("ARMED ***STAY***")) {
-                armButton.setClickable(true);
-                disarmButton.setClickable(true);
 
-                sendArmToast.cancel();
+                enableButtons();
+
+                toastPresenter.cancelSendArmToast();
                 attemptingToConnect = false;
-                alarmStatus = ARMED_STAY;
 
                 statusText.setTextColor(Color.parseColor("#FFFFFF"));
                 statusText.setText("Armed (Stay)");
@@ -324,17 +316,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 pullToRefresh.setRefreshing(false);
                 attemptingToConnect = false;
 
+                disableButtons();
+
                 dialogPresenter.showUnableToLoginDialog();
 
+                nullTCPObjects();
+
+            } else if (values[0].equals("Connection Error")) {
+                pullToRefresh.setRefreshing(false);
+                attemptingToConnect = false;
+
+                disableButtons();
+
+                dialogPresenter.showUnableToConnectDialog();
+
+                nullTCPObjects();
 
             }
         }
 
-//        @Override
-//        protected void onPostExecute() {
-//            delegate.onConnectionError();
-//
-//        }
+
     }
 
 
