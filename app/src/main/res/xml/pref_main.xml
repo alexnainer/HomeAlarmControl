@@ -40,6 +40,12 @@
             android:title="@string/auto_connect"
             android:summary="@string/auto_connect_summary"/>
 
+        <com.alexnainer.homesecuritycontrol.NumberPickerPreference
+            android:key="@string/key_connection_attempts"
+            android:title="@string/connection_attempts_title"
+
+            android:defaultValue="3" />
+
         <!--
         <RingtonePreference
             android:defaultValue="content://settings/system/notification_sound"

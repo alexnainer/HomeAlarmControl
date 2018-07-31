@@ -12,54 +12,52 @@
     tools:context=".MainActivity">
 
 
+    <android.support.v7.widget.CardView
+        android:id="@+id/statusView"
+        android:layout_width="390dp"
+        android:layout_height="102dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="71dp">
 
+        <TextView
+            android:id="@+id/statusText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Not Connected"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+    </android.support.v7.widget.CardView>
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/statusView"
-            android:layout_width="329dp"
-            android:layout_height="102dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="71dp">
+    <android.support.v7.widget.CardView
+        android:id="@+id/armButton"
+        android:layout_width="390dp"
+        android:layout_height="79dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="281dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground">
 
-            <TextView
-                android:id="@+id/statusText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Not Connected"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
-        </android.support.v7.widget.CardView>
-
-        <android.support.v7.widget.CardView
-            android:id="@+id/armButton"
-            android:layout_width="329dp"
-            android:layout_height="79dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="281dp"
-            android:clickable="true"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:focusable="true">
-
-            <TextView
-                android:id="@+id/armText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|center_horizontal"
-                android:text="Arm"
-                android:textAppearance="@style/TextAppearance.AppCompat.Button" />
-        </android.support.v7.widget.CardView>
+        <TextView
+            android:id="@+id/armText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:text="Arm"
+            android:textAppearance="@style/TextAppearance.AppCompat.Button" />
+    </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
         android:id="@+id/disarmButton"
-        android:layout_width="329dp"
-        android:layout_height="79dp"
+        android:layout_width="390dp"
+        android:layout_height="85dp"
         android:layout_below="@+id/armButton"
         android:layout_centerHorizontal="true"
         android:clickable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:focusable="true">
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground">
 
         <TextView
             android:id="@+id/disarmText"

@@ -8,7 +8,8 @@ public class DialogPresenter {
 
 
     private AlertDialog.Builder unableToLoginDialog;
-    private AlertDialog.Builder unableToConnectDialog;
+    private AlertDialog.Builder connectionResetDialog;
+    private AlertDialog.Builder connectionTimeoutDialog;
 
     public DialogPresenter(Context context) {
 
@@ -25,15 +26,15 @@ public class DialogPresenter {
                     }
                 });
 
-
         unableToLoginDialog.create();
 
-        unableToConnectDialog = new AlertDialog.Builder(context);
-        unableToConnectDialog.setTitle("Unable to Connect");
-        unableToConnectDialog.setMessage(context.getResources().getString(R.string.unable_to_connect_message));
-        unableToConnectDialog.setCancelable(true);
 
-        unableToConnectDialog.setPositiveButton(
+        connectionResetDialog = new AlertDialog.Builder(context);
+        connectionResetDialog.setTitle("Connection Reset");
+        connectionResetDialog.setMessage(context.getResources().getString(R.string.connection_reset_message));
+        connectionResetDialog.setCancelable(true);
+
+        connectionResetDialog.setPositiveButton(
                 "Ok",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -41,16 +42,35 @@ public class DialogPresenter {
                     }
                 });
 
+        connectionResetDialog.create();
 
-        unableToConnectDialog.create();
+
+        connectionTimeoutDialog = new AlertDialog.Builder(context);
+        connectionTimeoutDialog.setTitle("Connection Timeout");
+        connectionTimeoutDialog.setMessage(context.getResources().getString(R.string.connection_timeout_message));
+        connectionTimeoutDialog.setCancelable(true);
+
+        connectionTimeoutDialog.setPositiveButton(
+                "Ok",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        connectionTimeoutDialog.create();
     }
 
     public void showUnableToLoginDialog() {
         unableToLoginDialog.show();
     }
 
-    public void showUnableToConnectDialog() {
-        unableToConnectDialog.show();
+    public void showConnectionResetDialog() {
+        connectionResetDialog.show();
+    }
+
+    public void showConnectionTimeoutDialog() {
+        connectionTimeoutDialog.show();
     }
 
 

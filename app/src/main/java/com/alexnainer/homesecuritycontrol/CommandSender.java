@@ -17,9 +17,6 @@ public class CommandSender {
 
         password = prefs.getString("key_password", "DEFAULT");
         pin = prefs.getString("key_pin", "DEFAULT");
-
-
-
     }
 
      public void sendLogin(TCPClient tcpClient) {
@@ -45,6 +42,11 @@ public class CommandSender {
             tcpClient.sendMessage("^3," + pin + "1$");
         }
 
+    }
+
+    public void sendPoll(TCPClient tcpClient) {
+        Log.d("TCP", "Polling...");
+        tcpClient.sendMessage("^0,$");
     }
 
 

@@ -2,7 +2,8 @@
     <string name="app_name">Home Security Control</string>
 
     <string name="unable_to_login_message">This is most likely due to an incorrect password. Please verify your password is correct.</string>
-    <string name="unable_to_connect_message">The alarm reset the connection. Please try again.</string>
+    <string name="connection_reset_message">The alarm reset the connection. Please try again.</string>
+    <string name="connection_timeout_message">Unable to connect to alarm. Please ensure you are connected to the same network as your alarm, and the IP address is correct.</string>
 
 
     <string name="action_settings">Settings</string>
@@ -20,6 +21,13 @@
     <string name="auto_connect">Auto Connect</string>
     <string name="auto_connect_summary">Automatically attempt to connect to alarm when app is launched</string>
     <string name="key_auto_connect">key_auto_connect</string>
+
+    <string name="connection_attempts_title">Number of Connection Attempts</string>
+    <string name="connection_attempts_summary_singular">connection attempt before timeout</string>
+    <string name="connection_attempts_summary_plural">consecutive connection attempts before timeout</string>
+    <string name="key_connection_attempts">key_connection_attempts</string>
+
+
 
     <string name="pref_header_about">About</string>
     <string name="about_summary">Created by Alex Nainer. Made in Canada 🇨🇦</string>

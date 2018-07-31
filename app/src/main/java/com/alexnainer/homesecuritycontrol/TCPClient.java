@@ -10,7 +10,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 
 public class TCPClient {
 
@@ -21,19 +24,22 @@ public class TCPClient {
     public static final int serverPort = 4025;
     private String mServerMessage;
     private OnMessageReceived mMessageListener = null;
-    private boolean shouldSocketBeOpen = false;
+    private boolean isConnected = false;
     private PrintWriter mBufferOut;
     private BufferedReader mBufferIn;
     private Socket socket;
+    private int maxConnectionAttempts;
+    private int currentConnectionAttempt = 0;
 
-    public boolean unableToConnectError;
+    int x = 0;
+
 
     public TCPClient(OnMessageReceived listener, Context context) {
 
         mMessageListener = listener;
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        unableToConnectError = false;
         serverIP = prefs.getString("key_ip_address", "DEFAULT");
+        maxConnectionAttempts = prefs.getInt("key_connection_attempts", 1);
     }
 
 
@@ -55,14 +61,14 @@ public class TCPClient {
 
     public void stopClient() {
 
-        shouldSocketBeOpen = false;
+        isConnected = false;
 
         if (mBufferOut != null) {
             mBufferOut.flush();
             mBufferOut.close();
         }
 
-        mMessageListener = null;
+
         mBufferIn = null;
         mBufferOut = null;
         mServerMessage = null;
@@ -70,45 +76,84 @@ public class TCPClient {
 
     public void run() {
 
-        shouldSocketBeOpen = true;
+
+        boolean isTimeout = false;
+        currentConnectionAttempt = 0;
+
 
         try {
-            InetAddress serverAddress = InetAddress.getByName(serverIP);
+            InetSocketAddress serverAddress = new InetSocketAddress(serverIP, serverPort);
 
-            Log.d("TCP Client", "C: Connecting...");
 
-            socket = new Socket(serverAddress, serverPort);
 
-            try {
+            while (!isConnected && (currentConnectionAttempt < maxConnectionAttempts)) {
 
-                mBufferOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+                try {
+                    Log.d("TCP Client", "C: Connecting...");
 
-                mBufferIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    currentConnectionAttempt++;
+                    socket = new Socket();
+                    socket.connect(serverAddress, 1000);
 
-                while (shouldSocketBeOpen) {
-
-                    unableToConnectError = false;
+                    mBufferOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+                    mBufferIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
                     mServerMessage = mBufferIn.readLine();
-
                     if (mServerMessage != null && mMessageListener != null) {
                         mMessageListener.messageReceived(mServerMessage);
                     }
 
+                    isConnected = true;
+
+                } catch (SocketException e) {
+
+                    Log.e("TCP", "S: Will Attempt to Connect Again", e);
+
+                    socket.close();
+                    stopClient();
+
+                    Thread.sleep(3000);
+                } catch (SocketTimeoutException e) {
+                    Log.e("TCP", "S: Connection Timeout", e);
+                    isTimeout = true;
+
+                    socket.close();
+                    stopClient();
                 }
-
-
-            } catch (Exception e) {
-                Log.e("TCP", "S: Error1", e);
-
-                if (mMessageListener != null) {
-                    mMessageListener.messageReceived("Connection Error");
-                }
-
-
-            } finally {
-                socket.close();
             }
+
+            if (isTimeout) {
+                if (mMessageListener != null) {
+                    mMessageListener.messageReceived("Connection Timeout");
+                }
+            } else if (!isConnected) {
+                if (mMessageListener != null) {
+                    mMessageListener.messageReceived("Connection Reset");
+                }
+            } else {
+                try {
+                    while (isConnected) {
+
+                        mServerMessage = mBufferIn.readLine();
+
+                        if (mServerMessage != null && mMessageListener != null) {
+                            mMessageListener.messageReceived(mServerMessage);
+                        }
+                    }
+
+
+                } catch (Exception e) {
+                    Log.e("TCP", "S: Error1", e);
+
+
+                } finally {
+                    socket.close();
+
+
+                }
+            }
+
+
 
         } catch (Exception e) {
             Log.e("TCP", "C: Error2", e);

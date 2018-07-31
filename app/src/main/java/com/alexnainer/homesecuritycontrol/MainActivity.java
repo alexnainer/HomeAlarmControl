@@ -20,16 +20,20 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener  {
 
-    public TCPClient tcpClient;
+    private TCPClient tcpClient;
     private TCPNetworkingTask tcpNetworking;
-    public CommandSender commandSender;
-    public ColourAnimator colourAnimator;
-    public DialogPresenter dialogPresenter;
-    public ToastPresenter toastPresenter;
+    private CommandSender commandSender;
+    private ColourAnimator colourAnimator;
+    private DialogPresenter dialogPresenter;
+    private ToastPresenter toastPresenter;
     private SharedPreferences prefs;
 
-    boolean attemptingToConnect = false;
-    boolean didLaunchSettings = false;
+    private boolean didLaunchSettings = false;
+    private boolean isConnected = false;
+
+    private int currentConnectionAttempts;
+    private int maxConnectionAttempts;
+
 
     public Context context;
 
@@ -77,32 +81,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onRefresh() {
 
-                attemptingToConnect = true;
-                new android.os.Handler().postDelayed(
-                        new Runnable() {
-                            public void run() {
+                if (isConnected) {
+                    if (tcpClient != null) {
+                        commandSender.sendPoll(tcpClient);
+                    }
+                } else {
+                    startNetworkingTask();
 
-                                if (attemptingToConnect) {
-                                    pullToRefresh.setRefreshing(false);
-                                    toastPresenter.showCannotConnectToast();
-                                    Log.i("TCP", "Cannot connect to server");
-
-                                    if (tcpClient != null) {
-                                        tcpClient.stopClient();
-                                        tcpClient = null;
-                                    }
-
-                                    statusView.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                                    statusText.setText("Not Connected");
-
-                                }
-                            }
-                        },
-                        2000);
-
-                attemptToConnect();
-
-                Log.d("TCP", "attempting to connect...");
+                }
 
             }
         });
@@ -121,9 +107,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         boolean isAutoConnect = prefs.getBoolean("key_auto_connect", false);
 
+
         if(isAutoConnect && !didLaunchSettings){
             pullToRefresh.setRefreshing(true);
-            attemptToConnect();
+            startNetworkingTask();
         }
         didLaunchSettings = false;
 
@@ -137,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         statusView.setBackgroundColor(Color.parseColor("#FFFFFF"));
         statusText.setText("Not Connected");
         statusText.setTextColor(Color.parseColor("#000000"));
+
 
         Log.d("LEARN", "+ ON RESUME +");
     }
@@ -157,20 +145,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onStop() {
         super.onStop();
 
+        pullToRefresh.setRefreshing(false);
         commandSender = null;
         dialogPresenter = null;
         colourAnimator = null;
 
+        isConnected = false;
         nullTCPObjects();
 
         Log.d("LEARN", "-- ON STOP --");
     }
 
 
-    private void attemptToConnect() {
+    private void startNetworkingTask() {
+        Log.d("TCP", "Attempting to connect...");
         tcpNetworking = new TCPNetworkingTask();
         tcpNetworking.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
+
 
     private void nullTCPObjects() {
 
@@ -199,20 +191,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void enableButtons() {
 
-        armButton.setClickable(true);
-        disarmButton.setClickable(true);
 
-        armButton.setBackgroundColor(ContextCompat.getColor(context, R.color.cardEnabled));
-        disarmButton.setBackgroundColor(ContextCompat.getColor(context, R.color.cardEnabled));
+            armButton.setClickable(true);
+            disarmButton.setClickable(true);
 
-        armButton.setElevation(8);
-        disarmButton.setElevation(8);
+            armButton.setBackgroundColor(ContextCompat.getColor(context, R.color.cardEnabled));
+            disarmButton.setBackgroundColor(ContextCompat.getColor(context, R.color.cardEnabled));
+
+            armButton.setElevation(8);
+            disarmButton.setElevation(8);
     }
+
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -239,19 +232,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d("TCP", "arm onClick");
                 toastPresenter.showSendArmToast();
                 commandSender.sendArm(tcpClient);
+                pullToRefresh.setRefreshing(true);
+                disableButtons();
                 break;
 
             case R.id.disarmButton:
                 Log.d("TCP", "disarm onClick");
                 toastPresenter.showSendDisarmToast();
                 commandSender.sendDisarm(tcpClient);
+                pullToRefresh.setRefreshing(true);
+                disableButtons();
                 break;
 
             default:
                 break;
-
         }
-
     }
 
     public class TCPNetworkingTask extends AsyncTask<String, String, TCPClient> {
@@ -277,66 +272,64 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.d("TCP", "Response from Server: " + values[0]);
 
             if (values[0].equals("Login:")) {
-                attemptingToConnect = false;
+                isConnected = true;
                 commandSender.sendLogin(tcpClient);
             } else if (values[0].equals("OK")) {
-
+                isConnected = true;
                 statusText.setText("Getting Status...");
                 toastPresenter.showSuccessToast();
 
             } else if (values[0].contains("****DISARMED****")) {
-
-                enableButtons();
-
+                isConnected = true;
                 toastPresenter.cancelSendDisarmToast();
-                attemptingToConnect = false;
 
                 statusText.setTextColor(Color.parseColor("#FFFFFF"));
                 colourAnimator.toAlarmGreen(statusView);
+                enableButtons();
                 statusText.setText("Disarmed");
                 pullToRefresh.setRefreshing(false);
+
                 Log.d("TCP", "Alarm is disarmed");
 
 
             } else if (values[0].contains("ARMED ***STAY***")) {
-
-                enableButtons();
-
+                isConnected = true;
                 toastPresenter.cancelSendArmToast();
-                attemptingToConnect = false;
 
                 statusText.setTextColor(Color.parseColor("#FFFFFF"));
                 statusText.setText("Armed (Stay)");
                 colourAnimator.toAlarmRed(statusView);
+                enableButtons();
                 pullToRefresh.setRefreshing(false);
+
                 Log.d("TCP", "Alarm is armed");
 
 
             } else if (values[0].contains("FAILED")) {
                 pullToRefresh.setRefreshing(false);
-                attemptingToConnect = false;
+                isConnected = false;
 
                 disableButtons();
+
 
                 dialogPresenter.showUnableToLoginDialog();
 
                 nullTCPObjects();
 
-            } else if (values[0].equals("Connection Error")) {
+            } else if (values[0].equals("Connection Reset")) {
                 pullToRefresh.setRefreshing(false);
-                attemptingToConnect = false;
-
                 disableButtons();
 
-                dialogPresenter.showUnableToConnectDialog();
-
+                dialogPresenter.showConnectionResetDialog();
                 nullTCPObjects();
 
+            } else if (values[0].equals("Connection Timeout")) {
+                pullToRefresh.setRefreshing(false);
+                disableButtons();
+
+                dialogPresenter.showConnectionTimeoutDialog();
+                nullTCPObjects();
             }
         }
-
-
     }
-
-
 }
