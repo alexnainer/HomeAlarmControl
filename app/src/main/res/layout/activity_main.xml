@@ -1,7 +1,4 @@
-<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/pullToRefresh"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+
 
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -9,73 +6,196 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".SecurityControlActivity">
 
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/statusView"
-        android:layout_width="390dp"
-        android:layout_height="102dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="71dp">
+    <include layout="@layout/toolbar"
+        android:id="@+id/toolbar"/>
 
-        <TextView
-            android:id="@+id/statusText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Not Connected"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
-    </android.support.v7.widget.CardView>
+    <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/pullToRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp">
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/armButton"
-        android:layout_width="390dp"
-        android:layout_height="79dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="281dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?android:attr/selectableItemBackground">
 
-        <TextView
-            android:id="@+id/armText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:text="Arm"
-            android:textAppearance="@style/TextAppearance.AppCompat.Button" />
-    </android.support.v7.widget.CardView>
-
-    <android.support.v7.widget.CardView
-        android:id="@+id/disarmButton"
-        android:layout_width="390dp"
-        android:layout_height="85dp"
-        android:layout_below="@+id/armButton"
-        android:layout_centerHorizontal="true"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?android:attr/selectableItemBackground">
-
-        <TextView
-            android:id="@+id/disarmText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:gravity="center_horizontal"
-            android:text="Disarm"
-            android:textAppearance="@style/TextAppearance.AppCompat.Button" />
-
-        <View
-            android:id="@+id/divider"
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider" />
-    </android.support.v7.widget.CardView>
+            android:layout_height="match_parent"
+            android:fillViewport="true">
 
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <View
+                    android:id="@+id/dividerBetweenArmDisarm"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="?android:attr/listDivider"
+                    android:elevation="1dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/disarmButton"
+                    app:layout_constraintEnd_toEndOf="@+id/armStayButton"
+                    app:layout_constraintStart_toStartOf="@+id/armStayButton"
+                    app:layout_constraintTop_toTopOf="@+id/armStayButton" />
+
+                <View
+                    android:id="@+id/dividerBetweenArmStayAway"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="?android:attr/listDivider"
+                    android:elevation="1dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/armStayButton"
+                    app:layout_constraintEnd_toEndOf="@+id/armAwayButton"
+                    app:layout_constraintStart_toStartOf="@+id/armAwayButton"
+                    app:layout_constraintTop_toTopOf="@+id/armAwayButton" />
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/statusView"
+                    android:layout_width="0dp"
+                    android:layout_height="102dp"
+                    android:layout_alignParentTop="false"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="60dp"
+                    app:cardElevation="2dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                </android.support.v7.widget.CardView>
+
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/disarmButton"
+                    android:layout_width="0dp"
+                    android:layout_height="79dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="50dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/statusView">
+
+                </android.support.v7.widget.CardView>
+
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/armStayButton"
+                    android:layout_width="0dp"
+                    android:layout_height="79dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/disarmButton">
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/armAwayButton"
+                    android:layout_width="0dp"
+                    android:layout_height="79dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/armStayButton">
+
+                </android.support.v7.widget.CardView>
+
+
+                <TextView
+                    android:id="@+id/statusText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:elevation="12dp"
+                    android:fontFamily="@font/open_sans"
+                    android:text="Not Connected"
+                    android:textAllCaps="false"
+                    android:textAppearance="@android:style/TextAppearance.Material.Large"
+                    android:textSize="28sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/statusView"
+                    app:layout_constraintEnd_toEndOf="@+id/statusView"
+                    app:layout_constraintStart_toStartOf="@+id/statusView"
+                    app:layout_constraintTop_toTopOf="@+id/statusView" />
+
+                <TextView
+                    android:id="@+id/disarmText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:elevation="12dp"
+                    android:fontFamily="@font/open_sans_light"
+                    android:gravity="center_horizontal"
+                    android:text="Disarm"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Button"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/disarmButton"
+                    app:layout_constraintEnd_toEndOf="@+id/disarmButton"
+                    app:layout_constraintStart_toStartOf="@+id/disarmButton"
+                    app:layout_constraintTop_toTopOf="@+id/disarmButton" />
+
+                <TextView
+                    android:id="@+id/armStayText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:elevation="12dp"
+                    android:fontFamily="@font/open_sans_light"
+                    android:text="Arm (Stay)"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Button"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/armStayButton"
+                    app:layout_constraintEnd_toEndOf="@+id/armStayButton"
+                    app:layout_constraintStart_toStartOf="@+id/armStayButton"
+                    app:layout_constraintTop_toTopOf="@+id/armStayButton" />
+
+
+                <TextView
+                    android:id="@+id/armAwayText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:elevation="12dp"
+                    android:fontFamily="@font/open_sans_light"
+                    android:text="@string/arm_away"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Button"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/armAwayButton"
+                    app:layout_constraintEnd_toEndOf="@+id/armAwayButton"
+                    app:layout_constraintStart_toStartOf="@+id/armAwayButton"
+                    app:layout_constraintTop_toTopOf="@+id/armAwayButton" />
+
+                <!--
+                <android.support.constraint.Barrier
+                    android:id="@+id/barrier6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="top"
+                    app:constraint_referenced_ids="armAwayText, armAwayButton "
+                     />
+                     -->
+
+
+            </android.support.constraint.ConstraintLayout>
+        </android.support.v4.widget.NestedScrollView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </RelativeLayout>
 
-</android.support.v4.widget.SwipeRefreshLayout>

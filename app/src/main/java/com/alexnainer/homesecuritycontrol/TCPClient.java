@@ -78,6 +78,7 @@ public class TCPClient {
 
 
         boolean isTimeout = false;
+        boolean isConnectionReset = false;
         currentConnectionAttempt = 0;
 
 
@@ -95,6 +96,7 @@ public class TCPClient {
                     socket = new Socket();
                     socket.connect(serverAddress, 1000);
 
+
                     mBufferOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
                     mBufferIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -104,11 +106,13 @@ public class TCPClient {
                     }
 
                     isConnected = true;
+                    isConnectionReset = false;
+                    isTimeout = false;
 
                 } catch (SocketException e) {
 
                     Log.e("TCP", "S: Will Attempt to Connect Again", e);
-
+                    isConnectionReset = true;
                     socket.close();
                     stopClient();
 
@@ -126,7 +130,7 @@ public class TCPClient {
                 if (mMessageListener != null) {
                     mMessageListener.messageReceived("Connection Timeout");
                 }
-            } else if (!isConnected) {
+            } else if (isConnectionReset) {
                 if (mMessageListener != null) {
                     mMessageListener.messageReceived("Connection Reset");
                 }
@@ -148,7 +152,7 @@ public class TCPClient {
 
                 } finally {
                     socket.close();
-
+                    stopClient();
 
                 }
             }

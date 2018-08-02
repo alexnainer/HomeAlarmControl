@@ -2,6 +2,7 @@ package com.alexnainer.homesecuritycontrol;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 
 public class DialogPresenter {
@@ -10,8 +11,10 @@ public class DialogPresenter {
     private AlertDialog.Builder unableToLoginDialog;
     private AlertDialog.Builder connectionResetDialog;
     private AlertDialog.Builder connectionTimeoutDialog;
+    private AlertDialog.Builder noIPDialog;
 
-    public DialogPresenter(Context context) {
+
+    public DialogPresenter(final Context context) {
 
         unableToLoginDialog = new AlertDialog.Builder(context);
         unableToLoginDialog.setTitle("Unable to Login");
@@ -59,6 +62,32 @@ public class DialogPresenter {
                 });
 
         connectionTimeoutDialog.create();
+
+
+        noIPDialog = new AlertDialog.Builder(context);
+        noIPDialog.setTitle("No IP Address Set");
+        noIPDialog.setMessage(context.getResources().getString(R.string.no_ip_message));
+        noIPDialog.setCancelable(true);
+
+        noIPDialog.setPositiveButton(
+                "Ok",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        noIPDialog.setNegativeButton(
+                "Settings",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                        context.startActivity(new Intent(context, SettingsPrefActivity.class));
+
+                    }
+                });
+
+        noIPDialog.create();
     }
 
     public void showUnableToLoginDialog() {
@@ -71,6 +100,10 @@ public class DialogPresenter {
 
     public void showConnectionTimeoutDialog() {
         connectionTimeoutDialog.show();
+    }
+
+    public void showNoIPDialog() {
+        noIPDialog.show();
     }
 
 

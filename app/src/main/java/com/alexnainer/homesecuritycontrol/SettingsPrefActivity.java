@@ -2,28 +2,55 @@ package com.alexnainer.homesecuritycontrol;
 
 
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.TextView;
 
 public class SettingsPrefActivity extends AppCompatPreferenceActivity {
     private static final String TAG = SettingsPrefActivity.class.getSimpleName();
     private static String restOfSummaryNumberPickerPlural;
     private static String restOfSummaryNumberPickerSingular;
+    private Toolbar toolbar;
+    private TextView toolbarTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && Build.VERSION.SDK_INT < 23) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.grey_700));
+            getWindow().getDecorView().setBackgroundColor(ContextCompat.getColor(this, R.color.grey_50));
+        }
+
+        getLayoutInflater().inflate(R.layout.toolbar, (ViewGroup)findViewById(android.R.id.content));
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setElevation(8);
+
+
+        toolbarTitle = findViewById(R.id.toolbar_title);
+        toolbarTitle.setText("");
+
+
         restOfSummaryNumberPickerPlural = getString(R.string.connection_attempts_summary_plural);
         restOfSummaryNumberPickerSingular = getString(R.string.connection_attempts_summary_singular);
 
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getFragmentManager().beginTransaction().replace(android.R.id.content, new MainPreferenceFragment()).commit();
 
     }
@@ -34,6 +61,8 @@ public class SettingsPrefActivity extends AppCompatPreferenceActivity {
         public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_main);
+
+
 
             bindPreferenceSummaryToValue(findPreference(getString(R.string.key_ip_address)));
             bindPreferenceSummaryToValue(findPreference(getString(R.string.key_password)));

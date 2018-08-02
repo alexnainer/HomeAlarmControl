@@ -1,9 +1,12 @@
 <resources>
     <string name="app_name">Home Security Control</string>
 
+    <string name="arm_away">Arm (Away)</string>
+
     <string name="unable_to_login_message">This is most likely due to an incorrect password. Please verify your password is correct.</string>
     <string name="connection_reset_message">The alarm reset the connection. Please try again.</string>
     <string name="connection_timeout_message">Unable to connect to alarm. Please ensure you are connected to the same network as your alarm, and the IP address is correct.</string>
+    <string name="no_ip_message">You currently have no IP address for your alarm set. Please go to settings and set an IP address.</string>
 
 
     <string name="action_settings">Settings</string>
@@ -27,12 +30,16 @@
     <string name="connection_attempts_summary_plural">consecutive connection attempts before timeout</string>
     <string name="key_connection_attempts">key_connection_attempts</string>
 
+    <string name="show_arm_away">Show Arm (Away) Button</string>
+    <string name="key_show_arm_away">key_show_arm_away</string>
 
 
     <string name="pref_header_about">About</string>
-    <string name="about_summary">Created by Alex Nainer. Made in Canada 🇨🇦</string>
+    <string name="about_summary">Created by Alex Nainer. Made in Canada</string>
     <string name="title_version">Version</string>
     <string name="app_version">1.0_debug</string>
+    <string name="title_activity_intro_screen">IntroScreenActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
 
 
 </resources>
