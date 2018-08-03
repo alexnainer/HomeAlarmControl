@@ -44,6 +44,32 @@ public class ColourAnimator {
 
     }
 
+    public void toAlarmOrange(final View view) {
+
+        int currentColor = Color.TRANSPARENT;
+        Drawable background = view.getBackground();
+        if (background instanceof ColorDrawable) {
+            currentColor = ((ColorDrawable) background).getColor();
+        }
+
+        int alarmOrange = ContextCompat.getColor(context, R.color.orangeArmedAway);
+
+        ValueAnimator colorAnimation = new ValueAnimator();
+        colorAnimation.setIntValues(currentColor, alarmOrange);
+        colorAnimation.setEvaluator(new ArgbEvaluator());
+        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                view.setBackgroundColor((Integer)valueAnimator.getAnimatedValue());
+            }
+        });
+
+        colorAnimation.setDuration(300);
+        colorAnimation.start();
+
+    }
+
+
     public void toAlarmGreen(final View view) {
 
         int currentColor = Color.TRANSPARENT;
@@ -52,10 +78,10 @@ public class ColourAnimator {
             currentColor = ((ColorDrawable) background).getColor();
         }
 
-        int alarmRed = ContextCompat.getColor(context, R.color.greenDisarmed);
+        int alarmGreen = ContextCompat.getColor(context, R.color.greenDisarmed);
 
         ValueAnimator colorAnimation = new ValueAnimator();
-        colorAnimation.setIntValues(currentColor, alarmRed);
+        colorAnimation.setIntValues(currentColor, alarmGreen);
         colorAnimation.setEvaluator(new ArgbEvaluator());
         colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override

@@ -1,17 +1,14 @@
 package com.alexnainer.homesecuritycontrol;
 
 
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
-import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -33,7 +30,7 @@ public class SettingsPrefActivity extends AppCompatPreferenceActivity {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(ContextCompat.getColor(this, R.color.grey_700));
-            getWindow().getDecorView().setBackgroundColor(ContextCompat.getColor(this, R.color.grey_50));
+            getWindow().getDecorView().setBackgroundColor(ContextCompat.getColor(this, R.color.background_light));
         }
 
         getLayoutInflater().inflate(R.layout.toolbar, (ViewGroup)findViewById(android.R.id.content));

@@ -27,13 +27,6 @@ public class CommandSender {
         }
     }
 
-    public void sendArm(TCPClient tcpClient) {
-
-        if (tcpClient != null) {
-            Log.d("TCP", "Attempting to Arm...");
-            tcpClient.sendMessage("^3," + pin + "3$");
-        }
-    }
 
     public void sendDisarm(TCPClient tcpClient) {
 
@@ -43,6 +36,24 @@ public class CommandSender {
         }
 
     }
+
+    public void sendArmStay(TCPClient tcpClient) {
+
+        if (tcpClient != null) {
+            Log.d("TCP", "Attempting to Arm...");
+            tcpClient.sendMessage("^3," + pin + "3$");
+        }
+    }
+
+    public void sendArmAway(TCPClient tcpClient) {
+
+        if (tcpClient != null) {
+            Log.d("TCP", "Attempting to Arm...");
+            tcpClient.sendMessage("^3," + pin + "2$");
+        }
+    }
+
+
 
     public void sendPoll(TCPClient tcpClient) {
         Log.d("TCP", "Polling...");

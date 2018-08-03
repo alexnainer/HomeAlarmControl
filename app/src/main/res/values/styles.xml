@@ -1,21 +1,30 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
+    <style name="LightTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-        <item name="cardViewStyle">@style/CardView</item>
+        <item name="statusViewColor">@color/white</item>
+        <item name="backgroundColor">@color/colorPrimary</item>
+        <item name="buttonEnabledColor">@color/white</item>
 
         <item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
 
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="DarkTheme" parent="Theme.AppCompat.NoActionBar">
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+        <item name="textColor">@color/white</item>
+        <item name="backgroundColor">@color/grey_900</item>
+        <item name="statusViewColor">@color/grey_700</item>
+        <item name="buttonEnabledColor">@color/grey_700</item>
+        <item name="buttonDisabledColor">@color/grey_800</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
+
+    </style>
 
 
 </resources>

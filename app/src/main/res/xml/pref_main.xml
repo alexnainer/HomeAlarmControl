@@ -2,7 +2,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-    <PreferenceCategory android:layout="@layout/toolbar"></PreferenceCategory>
+    <PreferenceCategory android:layout="@layout/toolbar">
+
+    </PreferenceCategory>
 
     <PreferenceCategory android:title="Alarm Settings">
         <EditTextPreference
@@ -23,13 +25,7 @@
 
 
 
-        <!--
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/key_upload_over_wifi"
-            android:summary="@string/summary_upload_over_wifi"
-            android:title="@string/title_auto_upload" />
-        -->
+
     </PreferenceCategory>
 
 
@@ -52,20 +48,15 @@
             android:title="@string/show_arm_away"/>
 
         <!--
-        <RingtonePreference
-            android:defaultValue="content://settings/system/notification_sound"
-            android:dependency="notifications_new_message"
-            android:key="@string/key_notifications_new_message_ringtone"
-            android:ringtoneType="notification"
-            android:summary="@string/summary_choose_ringtone"
-            android:title="@string/pref_title_ringtone" />
-
-        <SwitchPreference
-            android:defaultValue="true"
-            android:key="@string/key_vibrate"
-            android:summary="@string/summary_vibrate"
-            android:title="@string/title_vibrate" />
+        <ListPreference
+            android:defaultValue="Light"
+            android:entries="@array/theme_list"
+            android:entryValues="@array/theme_list"
+            android:key="key_theme"
+            android:title="@string/theme"
+            android:summary="%s"/>
             -->
+
     </PreferenceCategory>
 
 
@@ -78,9 +69,5 @@
         <Preference
             android:selectable="false"
             android:summary="@string/about_summary" />
-
-
-
-
     </PreferenceCategory>
 </PreferenceScreen>

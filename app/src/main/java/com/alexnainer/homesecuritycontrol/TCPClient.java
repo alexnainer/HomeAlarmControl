@@ -94,7 +94,7 @@ public class TCPClient {
 
                     currentConnectionAttempt++;
                     socket = new Socket();
-                    socket.connect(serverAddress, 1000);
+                    socket.connect(serverAddress, 1500);
 
 
                     mBufferOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
