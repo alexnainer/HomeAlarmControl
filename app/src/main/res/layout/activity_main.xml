@@ -29,8 +29,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-
-
                 <View
                     android:id="@+id/dividerBetweenArmDisarm"
                     android:layout_width="0dp"

@@ -7,8 +7,16 @@
         android:id="@+id/refresh_button"
         android:icon="@drawable/baseline_refresh_24"
         android:title="Connect to alarm"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom"
+        />
+
+    <item
+        android:id="@+id/infoButton"
+        android:title="Info"
+        />
+
     <item
         android:id="@+id/settingsButton"
-        android:title="Settings" />
+        android:title="Settings"
+        />
 </menu>

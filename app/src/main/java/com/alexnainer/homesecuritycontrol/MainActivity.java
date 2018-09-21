@@ -22,6 +22,10 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetSequence;
+import com.getkeepsafe.taptargetview.TapTargetView;
+
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, CancelConnectCallback  {
 
@@ -33,6 +37,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ToastPresenter toastPresenter;
     private SnackbarPresenter snackbarPresenter;
     private SharedPreferences prefs;
+
+    private FirebaseManager firebaseManager;
 
     private boolean didLaunchSettings = false;
     private boolean isConnected = false;
@@ -49,8 +55,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     CardView disarmButton;
     CardView armStayButton;
     CardView armAwayButton;
-
-
 
     View dividerDisarmArm;
     View dividerArmStayAway;
@@ -69,6 +73,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
          setContentView(R.layout.activity_main);
 
         Log.d("LEARN", "+++ ON CREATE +++");
+
+        firebaseManager = new FirebaseManager(this);
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -105,18 +111,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dividerDisarmArm = findViewById(R.id.dividerBetweenArmDisarm);
         dividerArmStayAway = findViewById(R.id.dividerBetweenArmStayAway);
 
-
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+
                 attemptToConnect();
+                firebaseManager.eventRefreshPulled();
             }
         });
 
-
-
-
-
+        toolbar.inflateMenu(R.menu.menu_main);
     }
 
     @Override
@@ -129,19 +133,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onResume() {
         super.onResume();
 
-        boolean firstLaunch = prefs.getBoolean("key_first_launch", true);
-
-        if (firstLaunch) {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-            prefs.edit().putBoolean("key_first_launch", false).commit();
-        } else {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-        }
-
 
         boolean isAutoConnect = prefs.getBoolean("key_auto_connect", false);
         boolean showArmAwayButton = prefs.getBoolean("key_show_arm_away", true);
+
+        firebaseManager.propertyAutoConnect(isAutoConnect);
+        firebaseManager.propertyShowArmAwayButton(showArmAwayButton);
+
 
         if(showArmAwayButton) {
             armAwayButton.setVisibility(View.VISIBLE);
@@ -159,11 +157,80 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         toastPresenter = new ToastPresenter(this);
         snackbarPresenter = new SnackbarPresenter(findViewById(android.R.id.content), this);
 
-        setDisconnected();
+        boolean isFirstLaunch = prefs.getBoolean("key_first_launch", true);
+
+        if ( isFirstLaunch ) {
+            statusText.setText("");
+
+            final TapTargetSequence sequence = new TapTargetSequence(this)
+                    .targets(
+                            TapTarget.forToolbarOverflow(toolbar, "Settings", getString(R.string.first_settings_message))
+                                    .dimColor(android.R.color.black)
+                                    .outerCircleColor(R.color.colorAccent)
+                                    .targetCircleColor(android.R.color.black)
+                                    .transparentTarget(true)
+                                    .textColor(android.R.color.white)
+                                    .cancelable(true)
+                                    .targetRadius(30)
+                                    .id(1)
+
+                    )
+                    .listener(new TapTargetSequence.Listener() {
+                        @Override
+                        public void onSequenceFinish() {
+                            setDisconnected();
+                        }
+
+                        @Override
+                        public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {
+                            Log.d("TapTargetView", "Clicked on " + lastTarget.id());
+                        }
+
+                        @Override
+                        public void onSequenceCanceled(TapTarget lastTarget) {
+                            setDisconnected();
+                        }
+                    });
+
+            TapTargetView.showFor(this, TapTarget.forToolbarMenuItem(toolbar, R.id.refresh_button, "Connect Button", getString(R.string.first_refresh_message))
+                    .dimColor(android.R.color.black)
+                    .outerCircleColor(R.color.colorAccent)
+                    .targetCircleColor(android.R.color.black)
+                    .transparentTarget(true)
+                    .textColor(android.R.color.white)
+                    .cancelable(true)
+                    .targetRadius(40), new TapTargetView.Listener() {
+                @Override
+                public void onTargetClick(TapTargetView view) {
+                    super.onTargetClick(view);
+
+                    sequence.start();
+                }
+
+                @Override
+                public void onOuterCircleClick(TapTargetView view) {
+                    super.onOuterCircleClick(view);
+                    view.dismiss(false);
+                    sequence.start();
+                }
+
+                @Override
+                public void onTargetDismissed(TapTargetView view, boolean userInitiated) {
+                    sequence.start();
+                }
+            });
+
+            prefs.edit().putBoolean("key_first_launch", false).commit();
+
+
+        } else {
+            setDisconnected();
+        }
 
         if(isAutoConnect && !didLaunchSettings){
             pullToRefresh.setRefreshing(true);
             attemptToConnect();
+            firebaseManager.eventAutoConnect();
         }
         didLaunchSettings = false;
         currentStatus = DISCONNECTED;
@@ -214,6 +281,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (prefs.getString("key_ip_address", "").equals("")) {
             pullToRefresh.setRefreshing(false);
             dialogPresenter.showNoIPDialog();
+            firebaseManager.eventNoIPAddress();
 
         } else if (isConnected) {
             if (tcpClient != null) {
@@ -250,8 +318,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         snackbarPresenter.dismissConnectingSnackbar();
         statusView.setBackgroundColor(Color.parseColor("#FFFFFF"));
-        statusText.setText("Not Connected");
         statusText.setTextColor(Color.parseColor("#000000"));
+        statusText.setText("Not Connected");
+
 
         disableButtons();
 
@@ -300,6 +369,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
         return true;
     }
 
@@ -307,13 +377,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.settingsButton) {
+
+
+        if (id == R.id.refresh_button) {
+            firebaseManager.eventRefreshButtonClick();
+            pullToRefresh.setRefreshing(true);
+            attemptToConnect();
+        } else if (id == R.id.settingsButton) {
             didLaunchSettings = true;
             startActivity(new Intent(MainActivity.this, SettingsPrefActivity.class));
             return true;
-        } else if (id == R.id.refresh_button) {
-            pullToRefresh.setRefreshing(true);
-            attemptToConnect();
+        }  else if (id == R.id.infoButton) {
+            startActivity(new Intent(MainActivity.this, InfoActivity.class));
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -331,6 +407,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 commandSender.sendDisarm(tcpClient);
                 pullToRefresh.setRefreshing(true);
                 disableButtons();
+                firebaseManager.eventDisarmButtonClick();
                 break;
 
             case R.id.armStayButton:
@@ -339,6 +416,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 commandSender.sendArmStay(tcpClient);
                 pullToRefresh.setRefreshing(true);
                 disableButtons();
+                firebaseManager.eventArmStayButtonClick();
                 break;
 
             case R.id.armAwayButton:
@@ -347,6 +425,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 commandSender.sendArmAway(tcpClient);
                 pullToRefresh.setRefreshing(true);
                 disableButtons();
+                firebaseManager.eventArmAwayButtonClick();
                 break;
 
             default:
@@ -384,6 +463,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } else if (values[0].equals("OK")) {
                 isConnected = true;
                 statusText.setText("Getting Status...");
+                firebaseManager.eventSuccessfulConnection();
 
 
             } else if (values[0].contains("****DISARMED****")) {
@@ -465,6 +545,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 nullTCPObjects();
 
+                firebaseManager.eventConnectionFail();
+
             } else if (values[0].equals("Connection Reset")) {
                 pullToRefresh.setRefreshing(false);
                 isConnected = false;
@@ -473,6 +555,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 dialogPresenter.showConnectionResetDialog();
                 nullTCPObjects();
+                firebaseManager.eventConnectionReset();
 
             } else if (values[0].equals("Connection Timeout")) {
                 pullToRefresh.setRefreshing(false);
@@ -482,6 +565,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 dialogPresenter.showConnectionTimeoutDialog();
                 nullTCPObjects();
+                firebaseManager.eventConnectionTimeout();
             }
         }
     }

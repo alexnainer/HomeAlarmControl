@@ -40,7 +40,7 @@
         <com.alexnainer.homesecuritycontrol.NumberPickerPreference
             android:key="@string/key_connection_attempts"
             android:title="@string/connection_attempts_title"
-            android:defaultValue="3" />
+            android:defaultValue= "3"/>
 
         <CheckBoxPreference
             android:defaultValue="true"

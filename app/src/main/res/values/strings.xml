@@ -3,6 +3,9 @@
 
     <string name="arm_away">Arm (Away)</string>
 
+    <string name="first_refresh_message">You can press this button or pull down to connect to alarm</string>
+    <string name="first_settings_message">You can set your alarm IP address, password, pin, and configure other options in the settings</string>
+
     <string name="unable_to_login_message">This is most likely due to an incorrect password. Please verify your password is correct.</string>
     <string name="connection_reset_message">The alarm reset the connection. Please try again.</string>
     <string name="connection_timeout_message">Unable to connect to alarm. Please ensure you are connected to the same network as your alarm, and the IP address is correct.</string>
@@ -33,6 +36,10 @@
     <string name="connection_attempts_summary_plural">consecutive connection attempts before timeout</string>
     <string name="key_connection_attempts">key_connection_attempts</string>
 
+    <string name="welcome_text">Welcome to Home Security Control</string>
+
+
+
     <string name="show_arm_away">Show Arm (Away) Button</string>
     <string name="key_show_arm_away">key_show_arm_away</string>
 
@@ -42,13 +49,10 @@
     <string name="key_first_launch">key_first_launch</string>
 
 
-
-
     <string name="pref_header_about">About</string>
     <string name="about_summary">Created by Alex Nainer. Made in Canada</string>
     <string name="title_version">Version</string>
-    <string name="app_version">1.2_debug</string>
-
+    <string name="app_version">1.0_internal</string>
 
 
 </resources>

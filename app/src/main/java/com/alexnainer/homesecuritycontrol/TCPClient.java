@@ -31,7 +31,6 @@ public class TCPClient {
     private int maxConnectionAttempts;
     private int currentConnectionAttempt = 0;
 
-    int x = 0;
 
 
     public TCPClient(OnMessageReceived listener, Context context) {
@@ -39,7 +38,7 @@ public class TCPClient {
         mMessageListener = listener;
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
         serverIP = prefs.getString("key_ip_address", "DEFAULT");
-        maxConnectionAttempts = prefs.getInt("key_connection_attempts", 1);
+        maxConnectionAttempts = prefs.getInt("key_connection_attempts", 3);
     }
 
 

@@ -1,6 +1,7 @@
 package com.alexnainer.homesecuritycontrol;
 
 
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
@@ -34,6 +35,7 @@ public class SettingsPrefActivity extends AppCompatPreferenceActivity {
         }
 
         getLayoutInflater().inflate(R.layout.toolbar, (ViewGroup)findViewById(android.R.id.content));
+
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -50,6 +52,8 @@ public class SettingsPrefActivity extends AppCompatPreferenceActivity {
 
         getFragmentManager().beginTransaction().replace(android.R.id.content, new MainPreferenceFragment()).commit();
 
+
+
     }
 
     public static class MainPreferenceFragment extends PreferenceFragment {
@@ -64,6 +68,8 @@ public class SettingsPrefActivity extends AppCompatPreferenceActivity {
             bindPreferenceSummaryToValue(findPreference(getString(R.string.key_ip_address)));
             bindPreferenceSummaryToValue(findPreference(getString(R.string.key_password)));
             bindPreferenceSummaryToValue(findPreference(getString(R.string.key_connection_attempts)));
+
+
 
 
 
