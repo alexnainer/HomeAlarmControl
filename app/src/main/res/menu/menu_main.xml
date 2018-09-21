@@ -11,12 +11,11 @@
         />
 
     <item
-        android:id="@+id/infoButton"
-        android:title="Info"
-        />
+        android:id="@+id/settingsButton"
+        android:title="Settings"/>
 
     <item
-        android:id="@+id/settingsButton"
-        android:title="Settings"
-        />
+        android:id="@+id/infoButton"
+        android:title="Help"/>
+
 </menu>

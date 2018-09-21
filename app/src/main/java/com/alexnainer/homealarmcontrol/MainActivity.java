@@ -1,4 +1,4 @@
-package com.alexnainer.homesecuritycontrol;
+package com.alexnainer.homealarmcontrol;
 
 import android.content.Context;
 import android.content.Intent;

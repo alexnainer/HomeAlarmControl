@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Home Security Control</string>
+    <string name="app_name">Home Alarm Control</string>
 
     <string name="arm_away">Arm (Away)</string>
 
