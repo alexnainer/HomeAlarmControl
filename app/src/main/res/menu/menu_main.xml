@@ -14,8 +14,10 @@
         android:id="@+id/settingsButton"
         android:title="Settings"/>
 
+    <!--
     <item
         android:id="@+id/infoButton"
         android:title="Help"/>
+    -->
 
 </menu>
