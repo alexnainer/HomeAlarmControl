@@ -36,9 +36,7 @@
     <string name="connection_attempts_summary_plural">consecutive connection attempts before timeout</string>
     <string name="key_connection_attempts">key_connection_attempts</string>
 
-    <string name="welcome_text">Welcome to Home Security Control</string>
-
-
+    <string name="welcome_text">Welcome to Home Alarm Control</string>
 
     <string name="show_arm_away">Show Arm (Away) Button</string>
     <string name="key_show_arm_away">key_show_arm_away</string>
@@ -52,7 +50,7 @@
     <string name="pref_header_about">About</string>
     <string name="about_summary">Created by Alex Nainer. Made in Canada</string>
     <string name="title_version">Version</string>
-    <string name="app_version">1.0_internal</string>
+    <string name="app_version">1.0</string>
 
 
 </resources>

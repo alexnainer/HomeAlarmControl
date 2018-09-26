@@ -13,6 +13,7 @@ import android.view.View;
 public class ColourAnimator {
 
     private Context context;
+    private int animationDuration = 300;
 
     ColourAnimator(Context context) {
         this.context = context;
@@ -39,7 +40,7 @@ public class ColourAnimator {
             }
         });
 
-        colorAnimation.setDuration(300);
+        colorAnimation.setDuration(animationDuration);
         colorAnimation.start();
 
     }
@@ -64,7 +65,7 @@ public class ColourAnimator {
             }
         });
 
-        colorAnimation.setDuration(300);
+        colorAnimation.setDuration(animationDuration);
         colorAnimation.start();
 
     }
@@ -90,7 +91,7 @@ public class ColourAnimator {
             }
         });
 
-        colorAnimation.setDuration(300);
+        colorAnimation.setDuration(animationDuration);
         colorAnimation.start();
 
     }

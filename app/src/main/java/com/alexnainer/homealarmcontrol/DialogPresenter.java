@@ -20,7 +20,6 @@ public class DialogPresenter {
         unableToLoginDialog.setTitle("Unable to Login");
         unableToLoginDialog.setMessage(context.getResources().getString(R.string.unable_to_login_message));
         unableToLoginDialog.setCancelable(true);
-
         unableToLoginDialog.setPositiveButton(
                 "Ok",
                 new DialogInterface.OnClickListener() {
@@ -28,15 +27,12 @@ public class DialogPresenter {
                         dialog.cancel();
                     }
                 });
-
         unableToLoginDialog.create();
-
 
         connectionResetDialog = new AlertDialog.Builder(context);
         connectionResetDialog.setTitle("Connection Reset");
         connectionResetDialog.setMessage(context.getResources().getString(R.string.connection_reset_message));
         connectionResetDialog.setCancelable(true);
-
         connectionResetDialog.setPositiveButton(
                 "Ok",
                 new DialogInterface.OnClickListener() {
@@ -44,9 +40,7 @@ public class DialogPresenter {
                         dialog.cancel();
                     }
                 });
-
         connectionResetDialog.create();
-
 
         connectionTimeoutDialog = new AlertDialog.Builder(context);
         connectionTimeoutDialog.setTitle("Connection Timeout");
@@ -60,15 +54,12 @@ public class DialogPresenter {
                         dialog.cancel();
                     }
                 });
-
         connectionTimeoutDialog.create();
-
 
         noIPDialog = new AlertDialog.Builder(context);
         noIPDialog.setTitle("No IP Address Set");
         noIPDialog.setMessage(context.getResources().getString(R.string.no_ip_message));
         noIPDialog.setCancelable(true);
-
         noIPDialog.setPositiveButton(
                 "Ok",
                 new DialogInterface.OnClickListener() {
@@ -76,7 +67,6 @@ public class DialogPresenter {
                         dialog.cancel();
                     }
                 });
-
         noIPDialog.setNegativeButton(
                 "Settings",
                 new DialogInterface.OnClickListener() {
@@ -86,7 +76,6 @@ public class DialogPresenter {
 
                     }
                 });
-
         noIPDialog.create();
     }
 

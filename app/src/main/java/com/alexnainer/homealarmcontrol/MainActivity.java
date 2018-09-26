@@ -88,7 +88,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             getWindow().getDecorView().setBackgroundColor(ContextCompat.getColor(this, R.color.background_light));
         }
 
-
         context = getApplicationContext();
 
         pullToRefresh = findViewById(R.id.pullToRefresh);
@@ -133,13 +132,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onResume() {
         super.onResume();
 
-
         boolean isAutoConnect = prefs.getBoolean("key_auto_connect", false);
         boolean showArmAwayButton = prefs.getBoolean("key_show_arm_away", true);
 
         firebaseManager.propertyAutoConnect(isAutoConnect);
         firebaseManager.propertyShowArmAwayButton(showArmAwayButton);
-
 
         if(showArmAwayButton) {
             armAwayButton.setVisibility(View.VISIBLE);
@@ -151,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             armAwayText.setVisibility(View.GONE);
         }
 
+        //Create helper objects
         colourAnimator = new ColourAnimator(this);
         commandSender = new CommandSender(this);
         dialogPresenter = new DialogPresenter(this);
@@ -159,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         boolean isFirstLaunch = prefs.getBoolean("key_first_launch", true);
 
+        //First start up help animations
         if ( isFirstLaunch ) {
             statusText.setText("");
 
@@ -173,7 +172,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     .cancelable(true)
                                     .targetRadius(30)
                                     .id(1)
-
                     )
                     .listener(new TapTargetSequence.Listener() {
                         @Override
@@ -222,7 +220,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             prefs.edit().putBoolean("key_first_launch", false).commit();
 
-
         } else {
             setDisconnected();
         }
@@ -269,7 +266,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d("LEARN", "-- ON STOP --");
     }
 
-
     private void startNetworkingTask() {
         Log.d("TCP", "Attempting to connect...");
         tcpNetworking = new TCPNetworkingTask();
@@ -293,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
+    //Null objects when finished
     private void nullTCPObjects() {
 
         if (tcpClient != null) {
@@ -320,7 +316,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         statusView.setBackgroundColor(Color.parseColor("#FFFFFF"));
         statusText.setTextColor(Color.parseColor("#000000"));
         statusText.setText("Not Connected");
-
 
         disableButtons();
 
@@ -377,8 +372,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-
-
         if (id == R.id.refresh_button) {
             firebaseManager.eventRefreshButtonClick();
             pullToRefresh.setRefreshing(true);
@@ -387,19 +380,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             didLaunchSettings = true;
             startActivity(new Intent(MainActivity.this, SettingsPrefActivity.class));
             return true;
-        }  else if (id == R.id.infoButton) {
-            startActivity(new Intent(MainActivity.this, InfoActivity.class));
-            return true;
+            //TODO: Add Info screen with menu item
+//        }  else if (id == R.id.infoButton) {
+//            startActivity(new Intent(MainActivity.this, InfoActivity.class));
+//            return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onClick(View v) {
 
+        //Switch on button click
         switch (v.getId()) {
-
 
             case R.id.disarmButton:
                 Log.d("TCP", "disarm onClick");
@@ -433,8 +426,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
-
     public class TCPNetworkingTask extends AsyncTask<String, String, TCPClient> {
 
         @Override
@@ -447,7 +438,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }, context);
             tcpClient.run();
-
             return null;
         }
 
@@ -491,7 +481,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 toastPresenter.cancelSendArmStayToast();
                 snackbarPresenter.dismissConnectingSnackbar();;
                 snackbarPresenter.dismissArmedAwaySnackbar();
-
 
                 if (currentStatus == ARMED_AWAY) {
                     Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);

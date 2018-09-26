@@ -41,7 +41,6 @@ public class TCPClient {
         maxConnectionAttempts = prefs.getInt("key_connection_attempts", 3);
     }
 
-
     public void sendMessage(final String message) {
         Runnable runnable = new Runnable() {
             @Override
@@ -55,7 +54,6 @@ public class TCPClient {
         };
         Thread thread = new Thread(runnable);
         thread.start();
-
     }
 
     public void stopClient() {
@@ -67,7 +65,6 @@ public class TCPClient {
             mBufferOut.close();
         }
 
-
         mBufferIn = null;
         mBufferOut = null;
         mServerMessage = null;
@@ -75,16 +72,12 @@ public class TCPClient {
 
     public void run() {
 
-
         boolean isTimeout = false;
         boolean isConnectionReset = false;
         currentConnectionAttempt = 0;
 
-
         try {
             InetSocketAddress serverAddress = new InetSocketAddress(serverIP, serverPort);
-
-
 
             while (!isConnected && (currentConnectionAttempt < maxConnectionAttempts)) {
 
@@ -94,7 +87,6 @@ public class TCPClient {
                     currentConnectionAttempt++;
                     socket = new Socket();
                     socket.connect(serverAddress, 1500);
-
 
                     mBufferOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
                     mBufferIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -144,28 +136,20 @@ public class TCPClient {
                         }
                     }
 
-
                 } catch (Exception e) {
                     Log.e("TCP", "S: Error1", e);
-
 
                 } finally {
                     socket.close();
                     stopClient();
-
                 }
             }
-
-
-
         } catch (Exception e) {
             Log.e("TCP", "C: Error2", e);
         }
-
     }
 
     public interface OnMessageReceived {
         public void messageReceived(String message);
     }
-
 }
