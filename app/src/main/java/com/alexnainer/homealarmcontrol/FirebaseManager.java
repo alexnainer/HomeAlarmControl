@@ -47,7 +47,6 @@ public class FirebaseManager {
     public void eventSuccessfulConnection() {
         Bundle bundle = new Bundle();
         mFirebaseAnalytics.logEvent("successful_connection", bundle);
-
     }
 
     public void eventConnectionFail() {

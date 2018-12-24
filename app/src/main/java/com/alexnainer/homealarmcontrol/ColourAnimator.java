@@ -96,4 +96,29 @@ public class ColourAnimator {
 
     }
 
+    public void toFaultGrey(final View view) {
+
+        int currentColor = Color.TRANSPARENT;
+        Drawable background = view.getBackground();
+        if (background instanceof ColorDrawable) {
+            currentColor = ((ColorDrawable) background).getColor();
+        }
+
+        int faultGrey = ContextCompat.getColor(context, R.color.grey_700);
+
+        ValueAnimator colorAnimation = new ValueAnimator();
+        colorAnimation.setIntValues(currentColor, faultGrey);
+        colorAnimation.setEvaluator(new ArgbEvaluator());
+        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                view.setBackgroundColor((Integer)valueAnimator.getAnimatedValue());
+            }
+        });
+
+        colorAnimation.setDuration(animationDuration);
+        colorAnimation.start();
+
+    }
+
 }

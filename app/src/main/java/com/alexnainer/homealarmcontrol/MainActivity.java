@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int DISARMED = 1;
     private int ARMED_STAY = 2;
     private int ARMED_AWAY = 3;
+    private int FAULT = 4;
 
     private int currentStatus = DISCONNECTED;
 
@@ -465,6 +466,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (currentStatus != DISARMED) {
                     colourAnimator.toAlarmGreen(statusView);
                 }
+
                 currentStatus = DISARMED;
 
                 statusText.setTextColor(Color.parseColor("#FFFFFF"));
@@ -555,6 +557,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 dialogPresenter.showConnectionTimeoutDialog();
                 nullTCPObjects();
                 firebaseManager.eventConnectionTimeout();
+
+            } else if (values[0].contains("FAULT")) {
+                String serverMessage = values[0];
+                isConnected = true;
+                toastPresenter.cancelSendDisarmToast();
+                snackbarPresenter.dismissConnectingSnackbar();
+                snackbarPresenter.dismissArmedAwaySnackbar();
+
+                if (currentStatus != FAULT) {
+                    colourAnimator.toFaultGrey(statusView);
+                }
+
+                currentStatus = FAULT;
+
+                statusText.setTextColor(Color.parseColor("#FFFFFF"));
+
+                disableButtons();
+                serverMessage = serverMessage.replaceAll("\\s+", " ");
+                serverMessage = serverMessage.replaceAll("[$]", "");
+                statusText.setText(serverMessage.substring(serverMessage.lastIndexOf(",") + 1).trim());
+
+                pullToRefresh.setRefreshing(false);
+
             }
         }
     }

@@ -22,6 +22,7 @@ public class TCPClient {
     SharedPreferences prefs;
     public static String serverIP;
     public static final int serverPort = 4025;
+
     private String mServerMessage;
     private OnMessageReceived mMessageListener = null;
     private boolean isConnected = false;
@@ -30,8 +31,6 @@ public class TCPClient {
     private Socket socket;
     private int maxConnectionAttempts;
     private int currentConnectionAttempt = 0;
-
-
 
     public TCPClient(OnMessageReceived listener, Context context) {
 

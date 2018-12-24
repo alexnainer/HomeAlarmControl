@@ -21,7 +21,7 @@ android {
             versionNameSuffix 'internal'
         }
     }
-    buildToolsVersion '28.0.2'
+    buildToolsVersion '28.0.3'
     productFlavors {
     }
 }
