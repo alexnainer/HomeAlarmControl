@@ -6,7 +6,7 @@ android {
         applicationId 'com.alexnainer.homealarmcontrol'
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 2
+        versionCode 3
         versionName "@string/app_version"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
