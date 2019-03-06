@@ -28,6 +28,7 @@
             android:name=".InfoActivity"
             android:label="Info" >
         </activity>
+        <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
     </application>
 
 </manifest>
