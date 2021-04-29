@@ -6,9 +6,13 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.CardView;
+import androidx.core.content.ContextCompat;
+
+import android.os.Build;
 import android.view.View;
+import android.view.Window;
+
+import static android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
 
 public class ColourAnimator {
 
@@ -42,6 +46,29 @@ public class ColourAnimator {
 
         colorAnimation.setDuration(animationDuration);
         colorAnimation.start();
+
+    }
+
+    public void toAlarmRed(final Window window) {
+
+        int currentColor = window.getStatusBarColor();
+
+        int alarmGreen = ContextCompat.getColor(context, R.color.redArmed);
+
+        ValueAnimator colorAnimation = new ValueAnimator();
+        colorAnimation.setIntValues(currentColor, alarmGreen);
+        colorAnimation.setEvaluator(new ArgbEvaluator());
+        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                window.setStatusBarColor((Integer)valueAnimator.getAnimatedValue());
+            }
+        });
+
+        colorAnimation.setDuration(animationDuration);
+        colorAnimation.start();
+
+        window.getInsetsController().setSystemBarsAppearance(APPEARANCE_LIGHT_STATUS_BARS, APPEARANCE_LIGHT_STATUS_BARS); //Show
 
     }
 
@@ -93,6 +120,34 @@ public class ColourAnimator {
 
         colorAnimation.setDuration(animationDuration);
         colorAnimation.start();
+
+    }
+
+    public void toAlarmGreen(final Window window) {
+
+        int currentColor = window.getStatusBarColor();
+//        Drawable background = window.getStatusBarColor();
+//        if (background instanceof ColorDrawable) {
+//            currentColor = ((ColorDrawable) background).getColor();
+//        }
+
+        int alarmGreen = ContextCompat.getColor(context, R.color.greenDisarmed);
+
+        ValueAnimator colorAnimation = new ValueAnimator();
+        colorAnimation.setIntValues(currentColor, alarmGreen);
+        colorAnimation.setEvaluator(new ArgbEvaluator());
+        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+//                view.setBackgroundColor((Integer)valueAnimator.getAnimatedValue());
+                window.setStatusBarColor((Integer)valueAnimator.getAnimatedValue());
+            }
+        });
+
+        colorAnimation.setDuration(animationDuration);
+        colorAnimation.start();
+
+        window.getInsetsController().setSystemBarsAppearance(APPEARANCE_LIGHT_STATUS_BARS, APPEARANCE_LIGHT_STATUS_BARS); //Show
 
     }
 

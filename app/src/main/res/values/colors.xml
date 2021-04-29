@@ -8,12 +8,16 @@
     <color name="redArmed">#d32f2f</color>
     <color name="orangeArmedAway">#f57c00</color>
 
+    <color name="textColor">#212121</color>
+
     <color name="cardEnabledLight">#FFFFFF</color>
     <color name="cardDisabledLight">#EEEEEE</color>
 
+    <color name="buttonOutline">#e0e0e0</color>
+
     <color name="white">#FFFFFF</color>
 
-    <color name="background_light">#FAFAFA</color>
+    <color name="background">#FAFAFA</color>
 
 
     <color name="grey_100">#F5F5F5</color>

@@ -3,12 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
 
-    <item
-        android:id="@+id/refresh_button"
-        android:icon="@drawable/baseline_refresh_24"
-        android:title="Connect to alarm"
-        app:showAsAction="ifRoom"
-        />
+<!--    <item-->
+<!--        android:id="@+id/refresh_button"-->
+<!--        android:icon="@drawable/baseline_refresh_24"-->
+<!--        android:title="Connect to alarm"-->
+<!--        app:showAsAction="ifRoom"-->
+<!--        />-->
 
     <item
         android:id="@+id/settingsButton"

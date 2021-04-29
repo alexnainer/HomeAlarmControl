@@ -1,7 +1,6 @@
 package com.alexnainer.homealarmcontrol;
 
-import android.content.Context;
-import android.support.design.widget.Snackbar;
+import com.google.android.material.snackbar.Snackbar;
 import android.view.View;
 
 public class SnackbarPresenter {
